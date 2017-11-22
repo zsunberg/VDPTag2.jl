@@ -18,10 +18,10 @@ immutable ToNextMLSolver <: Solver
 end
 
 solve(s::ToNextMLSolver, p::VDPTagProblem) = ToNextML(mdp(p), s.rng)
-# function solve(s::ToNextMLSolver, dp::DiscreteVDPTagProblem)
-#     cp = cproblem(dp)
-#     return translate_policy(ToNextML(mdp(cp), s.rng), cp, dp, dp)
-# end
+function solve(s::ToNextMLSolver, dp::DiscreteVDPTagProblem)
+    cp = cproblem(dp)
+    return translate_policy(ToNextML(mdp(cp), s.rng), cp, dp, dp)
+end
 
 
 immutable ManageUncertainty <: Policy

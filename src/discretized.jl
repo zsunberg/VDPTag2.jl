@@ -1,12 +1,12 @@
 const IVec8 = SVector{8, Int}
 
-@with_kw immutable AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, Int}
+@with_kw immutable AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, IVec8}
     cpomdp::VDPTagPOMDP = VDPTagPOMDP()
     n_angles::Int       = 10
     binsize::Float64    = 0.5
 end
 
-@with_kw immutable ADiscreteVDPTagPOMDP <: POMDP{TagState, Int, Float64}
+@with_kw immutable ADiscreteVDPTagPOMDP <: POMDP{TagState, Int, Vec8}
     cpomdp::VDPTagPOMDP = VDPTagPOMDP()
     n_angles::Int       = 10
 end
