@@ -183,7 +183,7 @@ end
 
 include("rk4.jl")
 include("initial.jl")
-# include("discretized.jl")
+include("discretized.jl")
 include("visualization.jl")
 include("heuristics.jl")
 

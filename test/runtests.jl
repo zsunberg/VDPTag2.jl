@@ -18,3 +18,8 @@ pomdp = VDPTagPOMDP()
 for sao in stepthrough(pomdp, RandomPolicy(pomdp), "sao", max_steps=10)
     @show sao
 end
+
+dpomdp = AODiscreteVDPTagPOMDP(pomdp, 30, 0.5)
+for sao in stepthrough(dpomdp, RandomPolicy(dpomdp), "sao", max_steps=10)
+    @show sao
+end

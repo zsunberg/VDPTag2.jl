@@ -56,8 +56,7 @@ end
 function next_action(gen::NextMLFirst, pomdp::Union{POMDP, MDP}, b, onode)
     s = rand(gen.rng, b)
     ca = TagAction(false, next_action(gen, pomdp, s, onode))
-    return ca
-    # return convert_a(action_type(pomdp), ca, pomdp)
+    return convert_a(action_type(pomdp), ca, pomdp)
 end
 
 immutable TranslatedPolicy{P<:Policy, T, ST, AT} <: Policy
