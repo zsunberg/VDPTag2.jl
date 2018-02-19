@@ -54,15 +54,16 @@ struct TagAction
 end
 
 @with_kw immutable VDPTagMDP <: MDP{TagState, Float64}
-    mu::Float64         = 2.0
-    dt::Float64         = 0.1
-    step_size::Float64  = 0.5
-    tag_radius::Float64 = 0.1
-    tag_reward::Float64 = 100.0
-    step_cost::Float64  = 1.0
-    pos_std::Float64    = 0.05
-    tag_terminate::Bool = true
-    discount::Float64   = 0.95
+    mu::Float64          = 2.0
+    agent_speed::Float64 = 1.0
+    dt::Float64          = 0.1
+    step_size::Float64   = 0.5
+    tag_radius::Float64  = 0.1
+    tag_reward::Float64  = 100.0
+    step_cost::Float64   = 1.0
+    pos_std::Float64     = 0.05
+    tag_terminate::Bool  = true
+    discount::Float64    = 0.95
 end
 
 @with_kw immutable VDPTagPOMDP <: POMDP{TagState, TagAction, Vec8}
@@ -86,8 +87,9 @@ end
 
 function generate_s(pp::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
     p = mdp(pp)
-    pos = next_ml_target(p, s.target)
-    return TagState(s.agent+p.step_size*SVector(cos(a), sin(a)), pos+p.pos_std*SVector(randn(rng), randn(rng)))
+    targ = next_ml_target(p, s.target) + p.pos_std*SVector(randn(rng), randn(rng))
+    agent = s.agent+p.agent_speed*p.step_size*SVector(cos(a), sin(a))
+    return TagState(agent, targ)
 end
 
 function generate_sr(p::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
