@@ -22,6 +22,7 @@ export
     TagAction,
     VDPTagMDP,
     VDPTagPOMDP,
+    Vec2,
 
     DiscreteVDPTagMDP,
     DiscreteVDPTagPOMDP,
@@ -41,6 +42,7 @@ export
     NextMLFirst,
     DiscretizedPolicy,
     ManageUncertainty,
+    CardinalBarriers,
     mdp
 
 struct TagState
@@ -53,7 +55,7 @@ struct TagAction
     angle::Float64
 end
 
-@with_kw immutable VDPTagMDP <: MDP{TagState, Float64}
+@with_kw immutable VDPTagMDP{B} <: MDP{TagState, Float64}
     mu::Float64          = 2.0
     agent_speed::Float64 = 1.0
     dt::Float64          = 0.1
@@ -62,12 +64,13 @@ end
     tag_reward::Float64  = 100.0
     step_cost::Float64   = 1.0
     pos_std::Float64     = 0.05
+    barriers::B          = nothing
     tag_terminate::Bool  = true
     discount::Float64    = 0.95
 end
 
-@with_kw immutable VDPTagPOMDP <: POMDP{TagState, TagAction, Vec8}
-    mdp::VDPTagMDP              = VDPTagMDP()
+@with_kw immutable VDPTagPOMDP{B} <: POMDP{TagState, TagAction, Vec8}
+    mdp::VDPTagMDP{B}           = VDPTagMDP()
     meas_cost::Float64          = 5.0
     active_meas_std::Float64    = 0.1
     meas_std::Float64           = 5.0
@@ -88,7 +91,7 @@ end
 function generate_s(pp::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
     p = mdp(pp)
     targ = next_ml_target(p, s.target) + p.pos_std*SVector(randn(rng), randn(rng))
-    agent = s.agent+p.agent_speed*p.step_size*SVector(cos(a), sin(a))
+    agent = barrier_stop(p.barriers, s.agent, p.agent_speed*p.step_size*SVector(cos(a), sin(a)))
     return TagState(agent, targ)
 end
 
@@ -184,6 +187,7 @@ function observation(p::VDPTagPOMDP, a::TagAction, sp::TagState)
 end
 
 include("rk4.jl")
+include("barriers.jl")
 include("initial.jl")
 include("discretized.jl")
 include("visualization.jl")

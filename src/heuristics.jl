@@ -3,7 +3,7 @@ immutable ToNextML <: Policy
     rng::MersenneTwister
 end
 
-ToNextML(p::VDPTagMDP; rng=Base.GLOBAL_RNG) = ToNextML(p, rng)
+ToNextML(p::VDPTagProblem; rng=Base.GLOBAL_RNG) = ToNextML(mdp(p), rng)
 
 function action(p::ToNextML, s::TagState)
     next = next_ml_target(p.p, s.target)
