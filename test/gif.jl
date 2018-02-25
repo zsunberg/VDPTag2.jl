@@ -4,17 +4,19 @@ using POMDPToolbox
 using Reel
 using ProgressMeter
 using ParticleFilters
+using StaticArrays
 
 frames = Frames(MIME("image/png"), fps=2)
 
-pomdp = VDPTagPOMDP()
+# pomdp = VDPTagPOMDP()
+pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.2, 2.8)))
 policy = ManageUncertainty(pomdp, 0.01)
 # policy = ToNextML(mdp(pomdp))
 
-rng = MersenneTwister(4)
+rng = MersenneTwister(5)
 
-hr = HistoryRecorder(max_steps=100, rng=rng)
-filter = SIRParticleFilter(pomdp, 1000, rng=rng)
+hr = HistoryRecorder(max_steps=30, rng=rng)
+filter = SIRParticleFilter(pomdp, 200, rng=rng)
 hist = simulate(hr, pomdp, policy, filter)
 
 gr()
@@ -25,4 +27,4 @@ end
 filename = string(tempname(), "_vdprun.gif")
 write(filename, frames)
 println(filename)
-run(`setsid gifview $filename`)
+run(`setsid xdg-open $filename`)

@@ -1,26 +1,33 @@
-@recipe function f(mdp::VDPTagMDP, s::TagState)
+@recipe function f(p::VDPTagProblem)
+    m = mdp(p)
     ratio --> :equal
     xlim --> (-5, 5)
     ylim --> (-5, 5)
-    @series begin
-        color := :black
-        seriestype := :scatter
-        label := "target"
-        markersize := 0.1
-        [s.target[1]], [s.target[2]]
+    bs = p.barriers
+    if bs isa CardinalBarriers
+        for dir in cardinals() 
+            ends = (bs.start*dir, (bs.start+bs.len)*dir)
+            color := :black
+            label := nothing
+            @series [v[1] for v in ends], [v[2] for v in ends]
+        end
     end
+    nothing
+end
+
+@recipe function f(pomdp::VDPTagPOMDP, h::AbstractPOMDPHistory{TagState})
+    ratio --> :equal
+    xlim --> (-5, 5)
+    ylim --> (-5, 5)
+    @series mdp(pomdp), h
     @series begin
-        color --> :blue
-        label --> "agent"
-        pts = Plots.partialcircle(0, 2*pi, 100, mdp.tag_radius)
-        x, y = Plots.unzip(pts)
-        x+s.agent[1], y+s.agent[2]
+        label := "belief"
+        belief_hist(h)[end]
     end
 end
 
-
-@recipe function f(pomdp::VDPTagPOMDP, h::AbstractPOMDPHistory{TagState})
-    mdp = pomdp.mdp
+@recipe function f(p::VDPTagProblem, h::SimHistory)
+    m = mdp(p)
     ratio --> :equal
     xlim --> (-5, 5)
     ylim --> (-5, 5)
@@ -31,20 +38,17 @@ end
         x, y
     end
     @series begin
-        if action_hist(h)[end].look
+        a = action_hist(h)[end]
+        if a isa TagAction && a.look
             color := :blue
         else
             color := :red
         end
         s = state_hist(h)[end-1]
         label := "current agent position"
-        pts = Plots.partialcircle(0, 2*pi, 100, mdp.tag_radius)
+        pts = Plots.partialcircle(0, 2*pi, 100, m.tag_radius)
         x, y = Plots.unzip(pts)
         x+s.agent[1], y+s.agent[2]
-    end
-    @series begin
-        label := "belief"
-        belief_hist(h)[end]
     end
     @series begin
         seriestype := :scatter
@@ -53,7 +57,9 @@ end
         color --> :orange
         [pos[1]], [pos[2]]
     end
+    @series begin m end
 end
+
 
 @recipe function f(pc::ParticleCollection{TagState})
     seriestype := :scatter
@@ -62,4 +68,11 @@ end
     color --> :black
     markersize --> 0.1
     x, y
+end
+
+"""
+Create a gif of a history and return the filename.
+"""
+function gif(p::VDPTagProblem, h::SimHistory)
+    
 end

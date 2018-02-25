@@ -17,6 +17,16 @@ MCTS.n_children(::MyNode) = rand(1:10)
 @inferred next_action(gen, pomdp, s, MyNode())
 @inferred next_action(gen, pomdp, initial_state_distribution(pomdp), MyNode())
 
+for a in linspace(0.0, 2*pi, 100)
+    s = TagState(Vec2(0,0), Vec2(1,1))
+    barriers = CardinalBarriers(0.2, 1.8)
+    agent_speed = 1.0
+    step_size = 0.5
+    delta = agent_speed*step_size*Vec2(cos(a), sin(a))
+    agent = VDPTag2.barrier_stop(barriers, s.agent, delta)
+    @test agent == s.agent+delta
+end
+
 pomdp = VDPTagPOMDP()
 for sao in stepthrough(pomdp, RandomPolicy(pomdp), "sao", max_steps=10)
     @show sao
@@ -33,8 +43,10 @@ for sao in stepthrough(pomdp, ToNextML(pomdp), filter, "sao", max_steps=10)
     @show sao
 end
 
+
+
 # test to make sure it can't pass through any walls
-pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(1.0, 100.0)))
+pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.0, 100.0)))
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     @showprogress for i in 1:100
         is = initial_state(pomdp, Base.GLOBAL_RNG)
