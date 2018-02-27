@@ -3,16 +3,28 @@
     ratio --> :equal
     xlim --> (-5, 5)
     ylim --> (-5, 5)
-    bs = p.barriers
+    bs = m.barriers
+    # @series begin
+    #     lim = (-3.5,3.5)
+    #     pts = linspace( -3, 3, 20)
+    #     xys = [Vec2(x, y) for x in pts, y in pts]
+    #     xs = [xy[1] for xy in xys]
+    #     ys = [xy[2] for xy in xys]
+    #     seriestype := quiver
+    #     label := ""
+    #     color --> :lightblue
+    #     quiver := (x,y)->0.1*vdp_dynamics(m.mu, Vec2(x,y)),
+    #     xs, ys
+    # end
     if bs isa CardinalBarriers
         for dir in cardinals() 
             ends = (bs.start*dir, (bs.start+bs.len)*dir)
             color := :black
+            linewidth --> 4
             label --> ""
             @series [v[1] for v in ends], [v[2] for v in ends]
         end
     end
-    nothing
 end
 
 @recipe function f(pomdp::VDPTagPOMDP, h::AbstractPOMDPHistory{TagState})
@@ -70,9 +82,23 @@ end
     x, y
 end
 
-"""
-Create a gif of a history and return the filename.
-"""
+"Create a gif of a history and return the filename."
 function gif(p::VDPTagProblem, h::SimHistory)
     
+end
+
+"Create a quiver plot of the equations and the barriers"
+function Plots.quiver(p::VDPTagProblem)
+    m = mdp(p)
+    lim = (-3.5,3.5)
+    pts = linspace( -3, 3, 20)
+    xys = [Vec2(x, y) for x in pts, y in pts]
+    xs = [xy[1] for xy in xys]
+    ys = [xy[2] for xy in xys]
+    quiver(xs, ys,
+            quiver = (x,y)->0.1*vdp_dynamics(m.mu, Vec2(x,y)),
+            color=:lightblue,
+          )
+    plot!(p) # to get barriers
+    plot!(xlim=lim, ylim=lim)
 end
