@@ -8,7 +8,7 @@
         for dir in cardinals() 
             ends = (bs.start*dir, (bs.start+bs.len)*dir)
             color := :black
-            label := nothing
+            label --> ""
             @series [v[1] for v in ends], [v[2] for v in ends]
         end
     end
