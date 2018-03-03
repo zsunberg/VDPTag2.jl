@@ -91,7 +91,7 @@ end
 function Plots.quiver(p::VDPTagProblem)
     m = mdp(p)
     lim = (-3.5,3.5)
-    pts = linspace( -3, 3, 20)
+    pts = linspace( -3, 3, 16)
     xys = [Vec2(x, y) for x in pts, y in pts]
     xs = [xy[1] for xy in xys]
     ys = [xy[2] for xy in xys]
