@@ -55,7 +55,7 @@ struct TagAction
     angle::Float64
 end
 
-@with_kw immutable VDPTagMDP{B} <: MDP{TagState, Float64}
+@with_kw struct VDPTagMDP{B} <: MDP{TagState, Float64}
     mu::Float64          = 2.0
     agent_speed::Float64 = 1.0
     dt::Float64          = 0.1
@@ -69,7 +69,7 @@ end
     discount::Float64    = 0.95
 end
 
-@with_kw immutable VDPTagPOMDP{B} <: POMDP{TagState, TagAction, Vec8}
+@with_kw struct VDPTagPOMDP{B} <: POMDP{TagState, TagAction, Vec8}
     mdp::VDPTagMDP{B}           = VDPTagMDP()
     meas_cost::Float64          = 5.0
     active_meas_std::Float64    = 0.1
@@ -112,13 +112,13 @@ end
 discount(pp::VDPTagProblem) = mdp(pp).discount
 isterminal(pp::VDPTagProblem, s::TagState) = mdp(pp).tag_terminate && norm(s.agent-s.target) < mdp(pp).tag_radius
 
-immutable AngleSpace end
+struct AngleSpace end
 rand(rng::AbstractRNG, ::AngleSpace) = 2*pi*rand(rng)
 actions(::VDPTagMDP) = AngleSpace()
 
 generate_s(p::VDPTagPOMDP, s::TagState, a::TagAction, rng::AbstractRNG) = generate_s(p, s, a.angle, rng)
 
-immutable POVDPTagActionSpace end
+struct POVDPTagActionSpace end
 rand(rng::AbstractRNG, ::POVDPTagActionSpace) = TagAction(rand(rng, Bool), 2*pi*rand(rng))
 actions(::VDPTagPOMDP) = POVDPTagActionSpace()
 
