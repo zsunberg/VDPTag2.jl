@@ -1,12 +1,12 @@
 const IVec8 = SVector{8, Int}
 
-@with_kw immutable AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, IVec8}
+@with_kw struct AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, IVec8}
     cpomdp::VDPTagPOMDP = VDPTagPOMDP()
     n_angles::Int       = 10
     binsize::Float64    = 0.5
 end
 
-@with_kw immutable ADiscreteVDPTagPOMDP <: POMDP{TagState, Int, Vec8}
+@with_kw struct ADiscreteVDPTagPOMDP <: POMDP{TagState, Int, Vec8}
     cpomdp::VDPTagPOMDP = VDPTagPOMDP()
     n_angles::Int       = 10
 end
@@ -17,9 +17,9 @@ const DiscreteVDPTagProblem = Union{AODiscreteVDPTagPOMDP, ADiscreteVDPTagPOMDP}
 cproblem(p::AODiscreteVDPTagPOMDP) = p.cpomdp
 cproblem(p::ADiscreteVDPTagPOMDP) = p.cpomdp
 
-convert_s{T}(::Type{T}, x::T, p) = x
-convert_a{T}(::Type{T}, x::T, p) = x
-convert_o{T}(::Type{T}, x::T, p) = x
+convert_s(::Type{T}, x::T, p) where T = x
+convert_a(::Type{T}, x::T, p) where T = x
+convert_o(::Type{T}, x::T, p) where T = x
 
 # state
 function convert_s(::Type{Int}, s::TagState, p::DiscreteVDPTagProblem)
@@ -71,7 +71,7 @@ end
 
 n_states(p::AODiscreteVDPTagPOMDP) = Inf
 n_actions(p::DiscreteVDPTagProblem) = 2*p.n_angles
-discount(p::DiscreteVDPTagProblem) = discount(cproblem(p)) 
+discount(p::DiscreteVDPTagProblem) = discount(cproblem(p))
 isterminal(p::DiscreteVDPTagProblem, s) = isterminal(cproblem(p), convert_s(TagState, s, p))
 
 actions(p::DiscreteVDPTagProblem) = 1:n_actions(p)

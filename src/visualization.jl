@@ -17,7 +17,7 @@
     #     xs, ys
     # end
     if bs isa CardinalBarriers
-        for dir in cardinals() 
+        for dir in cardinals()
             ends = (bs.start*dir, (bs.start+bs.len)*dir)
             color := :black
             linewidth --> 4
@@ -27,7 +27,7 @@
     end
 end
 
-@recipe function f(pomdp::VDPTagPOMDP, h::AbstractPOMDPHistory{TagState})
+@recipe function f(pomdp::VDPTagPOMDP, h::POMDPHistory{TagState})
     ratio --> :equal
     xlim --> (-5, 5)
     ylim --> (-5, 5)
@@ -84,7 +84,7 @@ end
 
 "Create a gif of a history and return the filename."
 function gif(p::VDPTagProblem, h::SimHistory)
-    
+
 end
 
 "Create a quiver plot of the equations and the barriers"

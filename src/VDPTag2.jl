@@ -7,7 +7,12 @@ using Parameters
 using Plots
 using Distributions
 using POMDPToolbox
+using POMDPModelTools
+using POMDPPolicies
+using POMDPSimulators
 using ParticleFilters
+using Random
+
 
 const Vec2 = SVector{2, Float64}
 const Vec8 = SVector{8, Float64}
@@ -16,6 +21,7 @@ importall POMDPs
 import Base: rand, eltype, isnull, convert
 import MCTS: next_action, n_children
 import ParticleFilters: obs_weight
+
 
 export
     TagState,
@@ -193,7 +199,7 @@ include("discretized.jl")
 include("visualization.jl")
 include("heuristics.jl")
 
-function POMDPToolbox.gbmdp_handle_terminal(pomdp::VDPTagPOMDP, updater::Updater, b::ParticleCollection, s, a, rng)
+function POMDPModelTools.gbmdp_handle_terminal(pomdp::VDPTagPOMDP, updater::Updater, b::ParticleCollection, s, a, rng)
     return ParticleCollection([s])
 end
 

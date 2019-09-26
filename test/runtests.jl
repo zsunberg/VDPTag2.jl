@@ -5,7 +5,8 @@ using MCTS
 using POMDPs
 using ParticleFilters
 using ProgressMeter
-
+using LinearAlgebra
+using Random
 
 srand(1)
 pomdp = VDPTagPOMDP()
