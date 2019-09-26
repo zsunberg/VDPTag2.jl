@@ -1,10 +1,11 @@
 using VDPTag2
 using Base.Test
-using POMDPToolbox
+using POMDPSimulators
 using MCTS
 using POMDPs
 using ParticleFilters
 using ProgressMeter
+
 
 srand(1)
 pomdp = VDPTagPOMDP()
