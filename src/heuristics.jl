@@ -1,4 +1,4 @@
-immutable ToNextML <: Policy
+struct ToNextML <: Policy
     p::VDPTagMDP
     rng::MersenneTwister
 end
@@ -13,7 +13,7 @@ end
 
 action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, action(p, rand(p.rng, b)))
 
-immutable ToNextMLSolver <: Solver
+struct ToNextMLSolver <: Solver
     rng::MersenneTwister
 end
 
@@ -24,7 +24,7 @@ function solve(s::ToNextMLSolver, dp::DiscreteVDPTagProblem)
 end
 
 
-immutable ManageUncertainty <: Policy
+struct ManageUncertainty <: Policy
     p::VDPTagPOMDP
     max_norm_std::Float64
 end
@@ -40,7 +40,7 @@ function action(p::ManageUncertainty, b::ParticleCollection{TagState})
     return TagAction(sqrt(det(cov(normal_dist))) > p.max_norm_std, angle)
 end
 
-type NextMLFirst{RNG<:AbstractRNG}
+mutable struct NextMLFirst{RNG<:AbstractRNG}
     p::VDPTagMDP
     rng::RNG
 end
@@ -59,7 +59,7 @@ function next_action(gen::NextMLFirst, pomdp::Union{POMDP, MDP}, b, onode)
     return convert_a(actiontype(pomdp), ca, pomdp)
 end
 
-immutable TranslatedPolicy{P<:Policy, T, ST, AT} <: Policy
+struct TranslatedPolicy{P<:Policy, T, ST, AT} <: Policy
     policy::P
     translator::T
     S::Type{ST}

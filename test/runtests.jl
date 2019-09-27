@@ -1,5 +1,5 @@
 using VDPTag2
-using Base.Test
+using Test
 using POMDPSimulators
 using MCTS
 using POMDPs
@@ -7,8 +7,9 @@ using ParticleFilters
 using ProgressMeter
 using LinearAlgebra
 using Random
+using POMDPModelTools
 
-srand(1)
+Random.seed!(1)
 pomdp = VDPTagPOMDP()
 gen = NextMLFirst(mdp(pomdp), MersenneTwister(31))
 s = TagState([1.0, 1.0], [-1.0, -1.0])

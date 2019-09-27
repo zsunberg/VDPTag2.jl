@@ -6,7 +6,7 @@ using StaticArrays
 using Parameters
 using Plots
 using Distributions
-using POMDPToolbox
+# using POMDPToolbox
 using POMDPModelTools
 using POMDPPolicies
 using POMDPSimulators
@@ -17,7 +17,7 @@ using Random
 const Vec2 = SVector{2, Float64}
 const Vec8 = SVector{8, Float64}
 
-importall POMDPs
+# importall POMDPs
 import Base: rand, eltype, isnull, convert
 import MCTS: next_action, n_children
 import ParticleFilters: obs_weight

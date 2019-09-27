@@ -110,8 +110,8 @@ function generate_o(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState,
     return convert_o(IVec8, co, p)
 end
 
-initial_state_distribution(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
-initial_state_distribution(p::ADiscreteVDPTagPOMDP) = VDPInitDist()
+initialstate_distribution(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
+initialstate_distribution(p::ADiscreteVDPTagPOMDP) = VDPInitDist()
 
 #=
 gauss_cdf(mean, std, x) = 0.5*(1.0+erf((x-mean)/(std*sqrt(2))))
