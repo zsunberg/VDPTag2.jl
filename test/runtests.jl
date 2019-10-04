@@ -18,7 +18,7 @@ struct MyNode end
 MCTS.n_children(::MyNode) = rand(1:10)
 
 @inferred next_action(gen, pomdp, s, MyNode())
-@inferred next_action(gen, pomdp, initialstate_distribution(pomdp), MyNode())
+@inferred next_action(gen, pomdp, VDPTag2.initialstate_distribution(pomdp), MyNode())
 
 for a in linspace(0.0, 2*pi, 100)
     s = TagState(Vec2(0,0), Vec2(1,1))
