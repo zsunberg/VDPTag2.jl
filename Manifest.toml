@@ -60,6 +60,12 @@ git-tree-sha1 = "36bbf5374c661054d41410dc53ff752972583b9b"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
 version = "0.5.2"
 
+[[ColorSchemes]]
+deps = ["Colors", "Random", "Test"]
+git-tree-sha1 = "f72e71a1f062666786845175d24c8ae10235c359"
+uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
+version = "3.2.0"
+
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
 git-tree-sha1 = "10050a24b09e8e41b951e9976b109871ce98d965"
@@ -83,6 +89,12 @@ deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", 
 git-tree-sha1 = "84aa74986c5b9b898b0d1acaf3258741ee64754f"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
 version = "2.1.0"
+
+[[Compose]]
+deps = ["Base64", "Colors", "DataStructures", "Dates", "IterTools", "JSON", "LinearAlgebra", "Measures", "Printf", "Random", "Requires", "Test", "UUIDs"]
+git-tree-sha1 = "7d8fe0ad6f73c40ccc4e01f426a700c5a843a1d3"
+uuid = "a81c6b42-2e10-5240-aca2-a61377ecd94b"
+version = "0.7.3"
 
 [[Conda]]
 deps = ["JSON", "VersionParsing"]
@@ -212,6 +224,11 @@ git-tree-sha1 = "e8d1c381b1dc5343e5b6d37265acbe1de493d512"
 uuid = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
 version = "0.11.2"
 
+[[IterTools]]
+git-tree-sha1 = "2ebe60d7343962966d1779a74a760f13217a6901"
+uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
+version = "1.2.0"
+
 [[IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
@@ -294,6 +311,12 @@ deps = ["Distributions", "POMDPs", "Pkg", "Random", "Statistics", "Test"]
 git-tree-sha1 = "d8140fce969c3ff8389d53a6f1eda33699d7f345"
 uuid = "08074719-1b2a-587c-a292-00f91cc44415"
 version = "0.1.5"
+
+[[POMDPModels]]
+deps = ["BeliefUpdaters", "ColorSchemes", "Compose", "Distributions", "POMDPModelTools", "POMDPs", "Parameters", "Printf", "Random", "StaticArrays", "StatsBase", "Test"]
+git-tree-sha1 = "0592c2e92f5353dabd620b2f01ad1078dacbb6f0"
+uuid = "355abbd5-f08e-5560-ac9e-8b5f2592a0ca"
+version = "0.3.5"
 
 [[POMDPPolicies]]
 deps = ["BeliefUpdaters", "LinearAlgebra", "POMDPModelTools", "POMDPs", "Random", "SparseArrays", "StatsBase"]

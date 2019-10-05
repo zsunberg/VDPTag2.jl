@@ -8,6 +8,9 @@ using ProgressMeter
 using LinearAlgebra
 using Random
 using POMDPModelTools
+using POMDPPolicies
+using POMDPModels
+
 
 Random.seed!(1)
 pomdp = VDPTagPOMDP()
