@@ -15,7 +15,7 @@ using POMDPModels
 Random.seed!(1)
 pomdp = VDPTagPOMDP()
 gen = NextMLFirst(mdp(pomdp), MersenneTwister(31))
-s = TagState([1.0, 1.0], [-1.0, -1.0])
+global s = TagState([1.0, 1.0], [-1.0, -1.0])
 
 struct MyNode end
 MCTS.n_children(::MyNode) = rand(1:10)
@@ -23,7 +23,7 @@ MCTS.n_children(::MyNode) = rand(1:10)
 @inferred next_action(gen, pomdp, s, MyNode())
 @inferred next_action(gen, pomdp, VDPTag2.initialstate_distribution(pomdp), MyNode())
 
-for a in linspace(0.0, 2*pi, 100)
+for a in range(0.0, stop=2*pi, length=100)
     s = TagState(Vec2(0,0), Vec2(1,1))
     barriers = CardinalBarriers(0.2, 1.8)
     agent_speed = 1.0

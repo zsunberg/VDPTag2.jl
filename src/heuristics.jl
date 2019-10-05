@@ -5,13 +5,13 @@ end
 
 ToNextML(p::VDPTagProblem; rng=Base.GLOBAL_RNG) = ToNextML(mdp(p), rng)
 
-function action(p::ToNextML, s::TagState)
+function POMDPs.action(p::ToNextML, s::TagState)
     next = next_ml_target(p.p, s.target)
     diff = next-s.agent
-    return atan2(diff[2], diff[1])
+    return atan(diff[2], diff[1])
 end
 
-action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, action(p, rand(p.rng, b)))
+POMDPs.action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, POMDPs.action(p, rand(p.rng, b)))
 
 struct ToNextMLSolver <: Solver
     rng::MersenneTwister
@@ -29,7 +29,7 @@ struct ManageUncertainty <: Policy
     max_norm_std::Float64
 end
 
-function action(p::ManageUncertainty, b::ParticleCollection{TagState})
+function POMDPs.action(p::ManageUncertainty, b::ParticleCollection{TagState})
     agent = first(particles(b)).agent
     target_particles = Array{Float64}(2, n_particles(b))
     for (i, s) in enumerate(particles(b))
@@ -47,7 +47,7 @@ end
 
 function next_action(gen::NextMLFirst, mdp::Union{POMDP, MDP}, s::TagState, snode)
     if n_children(snode) < 1
-        return action(ToNextML(gen.p, gen.rng), s)
+        return POMDPs.action(ToNextML(gen.p, gen.rng), s)
     else
         return 2*pi*rand(gen.rng)
     end
@@ -70,7 +70,7 @@ function translate_policy(p::Policy, from::Union{POMDP,MDP}, to::Union{POMDP,MDP
     return TranslatedPolicy(p, translator, state_type(from), action_type(to))
 end
 
-function action(p::TranslatedPolicy, s)
+function POMDPs.action(p::TranslatedPolicy, s)
     cs = convert_s(p.S, s, p.translator)
     ca = action(p.policy, cs)
     return convert_a(p.A, ca, p.translator)
