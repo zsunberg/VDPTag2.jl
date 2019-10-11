@@ -1,6 +1,5 @@
 using VDPTag2
 using Test
-using POMDPSimulators
 using MCTS
 using POMDPs
 using ParticleFilters
@@ -10,6 +9,7 @@ using Random
 using POMDPModelTools
 using POMDPPolicies
 using POMDPModels
+using POMDPSimulators
 
 
 Random.seed!(1)
@@ -55,15 +55,15 @@ end
 pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.0, 100.0)))
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     @showprogress for i in 1:100
-        is = initial_state(pomdp, Base.GLOBAL_RNG)
+        is = initialstate(pomdp, Random.GLOBAL_RNG)
         is = TagState(quadrant, is.target)
-        for (s, sp) in stepthrough(pomdp, ToNextML(pomdp), filter, "s,sp", max_steps=100, initial_state=is)
+        for (s, sp) in stepthrough(pomdp, ToNextML(pomdp), filter, "s,sp", is; max_steps=100)
             @test all(s.agent.*quadrant .>= 0.0)
             if s == sp
                 println("did not move (this should not happen a bunch of times)")
             end
         end
-        for (s, sp) in stepthrough(pomdp, RandomPolicy(pomdp), "s,sp", max_steps=100, initial_state=is)
+        for (s, sp) in stepthrough(pomdp, RandomPolicy(pomdp), "s,sp", 100, is)
             @test all(s.agent.*quadrant .>= 0.0)
             if s == sp
                 println("did not move (this should not happen a bunch of times)")
@@ -78,7 +78,7 @@ N = 100
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     in_other = falses(N)
     @showprogress for i in 1:N
-        is = initial_state(pomdp, Base.GLOBAL_RNG)
+        is = initialstate(pomdp, Random.GLOBAL_RNG)
         is = TagState(quadrant, is.target)
         hr = HistoryRecorder(max_steps=100)
         hist = simulate(hr, pomdp, ToNextML(pomdp), filter)
@@ -91,7 +91,7 @@ end
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     in_other = falses(N)
     @showprogress for i in 1:N
-        is = initial_state(pomdp, Base.GLOBAL_RNG)
+        is = initialstate(pomdp, Random.GLOBAL_RNG)
         is = TagState(quadrant, is.target)
         hr = HistoryRecorder(max_steps=2)
         hist = simulate(hr, pomdp, RandomPolicy(pomdp))

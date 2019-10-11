@@ -13,6 +13,8 @@ using POMDPSimulators
 using ParticleFilters
 using Random
 
+using LinearAlgebra
+
 
 const Vec2 = SVector{2, Float64}
 const Vec8 = SVector{8, Float64}
@@ -158,13 +160,13 @@ function rand(rng::AbstractRNG, d::BeamDist)
     return SVector(o)
 end
 
-function pdf(d::BeamDist, o::Vec8)
+function POMDPs.pdf(d::BeamDist, o::Vec8)
     p = 1.0
     for i in 1:length(o)
         if i == d.abeam
-            p *= pdf(d.an, o[i])
+            p *= POMDPs.pdf(d.an, o[i])
         else
-            p *= pdf(d.n, o[i])
+            p *= POMDPs.pdf(d.n, o[i])
         end
     end
     return p

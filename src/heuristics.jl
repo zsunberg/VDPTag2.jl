@@ -3,7 +3,7 @@ struct ToNextML <: Policy
     rng::MersenneTwister
 end
 
-ToNextML(p::VDPTagProblem; rng=Base.GLOBAL_RNG) = ToNextML(mdp(p), rng)
+ToNextML(p::VDPTagProblem; rng=Random.GLOBAL_RNG) = ToNextML(mdp(p), rng)
 
 function POMDPs.action(p::ToNextML, s::TagState)
     next = next_ml_target(p.p, s.target)
@@ -11,7 +11,7 @@ function POMDPs.action(p::ToNextML, s::TagState)
     return atan(diff[2], diff[1])
 end
 
-POMDPs.action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, POMDPs.action(p, rand(p.rng, b)))
+VDPTag2.action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, POMDPs.action(p, rand(p.rng, b)))
 
 struct ToNextMLSolver <: Solver
     rng::MersenneTwister
@@ -36,7 +36,7 @@ function POMDPs.action(p::ManageUncertainty, b::ParticleCollection{TagState})
         target_particles[:,i] = s.target
     end
     normal_dist = fit(MvNormal, target_particles)
-    angle = action(ToNextML(mdp(p.p)), TagState(agent, mean(normal_dist)))
+    angle = POMDPs.action(ToNextML(mdp(p.p)), TagState(agent, mean(normal_dist)))
     return TagAction(sqrt(det(cov(normal_dist))) > p.max_norm_std, angle)
 end
 
@@ -72,14 +72,14 @@ end
 
 function POMDPs.action(p::TranslatedPolicy, s)
     cs = convert_s(p.S, s, p.translator)
-    ca = action(p.policy, cs)
+    ca = POMDPs.action(p.policy, cs)
     return convert_a(p.A, ca, p.translator)
 end
 
 # this is not the most efficient way to do this
-function action(p::TranslatedPolicy, pc::AbstractParticleBelief)
+function POMDPs.action(p::TranslatedPolicy, pc::AbstractParticleBelief)
     @assert !isa(pc, WeightedParticleBelief)
     cpc = ParticleCollection([convert_s(p.S, s, p.translator) for s in particles(pc)])
-    ca = action(p.policy, cpc)
+    ca = POMDPs.action(p.policy, cpc)
     return convert_a(p.A, ca, p.translator)
 end

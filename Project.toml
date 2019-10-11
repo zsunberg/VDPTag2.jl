@@ -5,6 +5,7 @@ version = "0.1.0"
 [deps]
 BeliefUpdaters = "8bb6e9a1-7d73-552c-a44a-e5dc5634aac4"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MCTS = "e12ccd36-dcad-5f33-8774-9175229e7b33"
 POMDPModelTools = "08074719-1b2a-587c-a292-00f91cc44415"
 POMDPModels = "355abbd5-f08e-5560-ac9e-8b5f2592a0ca"

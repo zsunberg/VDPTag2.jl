@@ -17,7 +17,7 @@ rng = MersenneTwister(5)
 
 hr = HistoryRecorder(max_steps=30, rng=rng)
 filter = SIRParticleFilter(pomdp, 200, rng=rng)
-hist = simulate(hr, pomdp, policy, filter)
+hist = POMDPs.simulate(hr, pomdp, policy, filter)
 
 gr()
 @showprogress "Creating gif..." for i in 1:n_steps(hist)
