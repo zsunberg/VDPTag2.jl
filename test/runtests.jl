@@ -21,7 +21,7 @@ struct MyNode end
 MCTS.n_children(::MyNode) = rand(1:10)
 
 @inferred next_action(gen, pomdp, s, MyNode())
-@inferred next_action(gen, pomdp, VDPTag2.initialstate_distribution(pomdp), MyNode())
+@inferred next_action(gen, pomdp, initialstate_distribution(pomdp), MyNode())
 
 for a in range(0.0, stop=2*pi, length=100)
     s = TagState(Vec2(0,0), Vec2(1,1))
@@ -29,7 +29,7 @@ for a in range(0.0, stop=2*pi, length=100)
     agent_speed = 1.0
     step_size = 0.5
     delta = agent_speed*step_size*Vec2(cos(a), sin(a))
-    agent = VDPTag2.barrier_stop(barriers, s.agent, delta)
+    agent = barrier_stop(barriers, s.agent, delta)
     @test agent == s.agent+delta
 end
 

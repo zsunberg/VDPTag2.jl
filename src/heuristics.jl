@@ -11,7 +11,7 @@ function POMDPs.action(p::ToNextML, s::TagState)
     return atan(diff[2], diff[1])
 end
 
-VDPTag2.action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, POMDPs.action(p, rand(p.rng, b)))
+action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, POMDPs.action(p, rand(p.rng, b)))
 
 struct ToNextMLSolver <: Solver
     rng::MersenneTwister

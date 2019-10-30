@@ -149,7 +149,8 @@ struct BeamDist
 end
 
 function rand(rng::AbstractRNG, d::BeamDist)
-    o = MVector{8, Float64}()
+    o = MVector{8, Float64}(undef)
+    println("BeamDist = $(BeamDist)")
     for i in 1:length(o)
         if i == d.abeam
             o[i] = rand(rng, d.an)
