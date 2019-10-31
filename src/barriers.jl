@@ -1,3 +1,4 @@
+export barrier_stop
 barrier_stop(nothing, from, delta) = from + delta
 
 struct CardinalBarriers
