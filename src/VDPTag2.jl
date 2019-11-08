@@ -117,7 +117,7 @@ function POMDPs.reward(pp::VDPTagProblem, s::TagState, a::Float64, sp::TagState)
     end
 end
 
-discount(pp::VDPTagProblem) = mdp(pp).discount
+POMDPs.discount(pp::VDPTagProblem) = mdp(pp).discount
 isterminal(pp::VDPTagProblem, s::TagState) = mdp(pp).tag_terminate && norm(s.agent-s.target) < mdp(pp).tag_radius
 
 struct AngleSpace end

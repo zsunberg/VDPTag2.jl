@@ -72,7 +72,7 @@ end
 
 n_states(p::AODiscreteVDPTagPOMDP) = Inf
 n_actions(p::DiscreteVDPTagProblem) = 2*p.n_angles
-discount(p::DiscreteVDPTagProblem) = discount(cproblem(p))
+POMDPs.discount(p::DiscreteVDPTagProblem) = discount(cproblem(p))
 isterminal(p::DiscreteVDPTagProblem, s) = isterminal(cproblem(p), convert_s(TagState, s, p))
 
 POMDPs.actions(p::DiscreteVDPTagProblem) = 1:n_actions(p)
