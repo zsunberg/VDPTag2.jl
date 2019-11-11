@@ -58,7 +58,7 @@ for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
         is = initialstate(pomdp, Random.GLOBAL_RNG)
         is = TagState(quadrant, is.target)
         for (s, sp) in stepthrough(pomdp, ToNextML(pomdp), filter, "s,sp", max_steps=100)
-            println(s.agent.*quadrant .>= 0.0)
+            # println(s.agent.*quadrant .>= 0.0)
             #@test all(s.agent.*quadrant .>= 0.0) #TODO: ask what is going on
             if s == sp
                 println("did not move (this should not happen a bunch of times)")
