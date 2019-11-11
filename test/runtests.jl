@@ -49,24 +49,22 @@ for sao in stepthrough(pomdp, ToNextML(pomdp), filter, "sao", max_steps=10)
     @show sao
 end
 
-
-
 # test to make sure it can't pass through any walls
 pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.0, 100.0)))
+filter = SIRParticleFilter(pomdp, 1000)
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     @showprogress for i in 1:100
         is = initialstate(pomdp, Random.GLOBAL_RNG)
         is = TagState(quadrant, is.target)
-        for (s, sp) in stepthrough(pomdp, ToNextML(pomdp), filter, "s,sp", max_steps=100)
-            # println(s.agent.*quadrant .>= 0.0)
-            #@test all(s.agent.*quadrant .>= 0.0) #TODO: ask what is going on
+        for (s, sp) in stepthrough(pomdp, ToNextML(pomdp), filter, initialstate_distribution(pomdp), is, "s,sp", max_steps=100)
+            @test all(s.agent.*quadrant .>= 0.0)
             if s == sp
                 println("did not move (this should not happen a bunch of times)")
             end
         end
-        for (s, sp) in stepthrough(pomdp, RandomPolicy(pomdp), "s,sp", max_steps=100)
-            #println(s.agent.*quadrant .>= 0.0)
-            #@test all(s.agent.*quadrant .>= 0.0) #TODO: ask what is going on
+        policy = RandomPolicy(pomdp)
+        for (s, sp) in stepthrough(pomdp, policy, updater(policy), nothing, is, "s,sp", max_steps=100)
+            @test all(s.agent.*quadrant .>= 0.0)
             if s == sp
                 println("did not move (this should not happen a bunch of times)")
             end
