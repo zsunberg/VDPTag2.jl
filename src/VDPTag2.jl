@@ -6,13 +6,11 @@ using StaticArrays
 using Parameters
 using Plots
 using Distributions
-# using POMDPToolbox
 using POMDPModelTools
 using POMDPPolicies
 using POMDPSimulators
 using ParticleFilters
 using Random
-
 using LinearAlgebra
 
 
