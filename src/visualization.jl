@@ -1,3 +1,5 @@
+using POMDPSimulators
+
 @recipe function f(p::VDPTagProblem)
     m = mdp(p)
     ratio --> :equal
