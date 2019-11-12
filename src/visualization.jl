@@ -27,7 +27,7 @@
     end
 end
 
-@recipe function f(pomdp::VDPTagPOMDP, h::POMDPHistory{TagState})
+@recipe function f(pomdp::VDPTagPOMDP, h::AbstractSimHistory)
     ratio --> :equal
     xlim --> (-5, 5)
     ylim --> (-5, 5)
@@ -38,7 +38,7 @@ end
     end
 end
 
-@recipe function f(p::VDPTagProblem, h::SimHistory)
+@recipe function f(p::VDPTagProblem, h::AbstractSimHistory)
     m = mdp(p)
     ratio --> :equal
     xlim --> (-5, 5)
@@ -80,11 +80,6 @@ end
     color --> :black
     markersize --> 0.1
     x, y
-end
-
-"Create a gif of a history and return the filename."
-function gif(p::VDPTagProblem, h::SimHistory)
-
 end
 
 "Create a quiver plot of the equations and the barriers"
