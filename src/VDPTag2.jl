@@ -101,11 +101,6 @@ function POMDPs.generate_s(pp::VDPTagProblem, s::TagState, a::Float64, rng::Abst
     return TagState(agent, targ)
 end
 
-function POMDPs.generate_sr(p::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
-    sp = generate_s(p, s, a, rng)
-    return sp, reward(p, s, a, sp)
-end
-
 function POMDPs.reward(pp::VDPTagProblem, s::TagState, a::Float64, sp::TagState)
     p = mdp(pp)
     if norm(sp.agent-sp.target) < p.tag_radius
@@ -148,7 +143,6 @@ end
 
 function rand(rng::AbstractRNG, d::BeamDist)
     o = MVector{8, Float64}(undef)
-    println("BeamDist = $(BeamDist)")
     for i in 1:length(o)
         if i == d.abeam
             o[i] = rand(rng, d.an)
