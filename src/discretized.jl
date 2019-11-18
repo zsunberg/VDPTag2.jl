@@ -1,12 +1,13 @@
+import POMDPs.initialstate_distribution
 const IVec8 = SVector{8, Int}
 
-@with_kw immutable AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, IVec8}
+@with_kw struct AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, IVec8}
     cpomdp::VDPTagPOMDP = VDPTagPOMDP()
     n_angles::Int       = 10
     binsize::Float64    = 0.5
 end
 
-@with_kw immutable ADiscreteVDPTagPOMDP <: POMDP{TagState, Int, Vec8}
+@with_kw struct ADiscreteVDPTagPOMDP <: POMDP{TagState, Int, Vec8}
     cpomdp::VDPTagPOMDP = VDPTagPOMDP()
     n_angles::Int       = 10
 end
@@ -17,9 +18,9 @@ const DiscreteVDPTagProblem = Union{AODiscreteVDPTagPOMDP, ADiscreteVDPTagPOMDP}
 cproblem(p::AODiscreteVDPTagPOMDP) = p.cpomdp
 cproblem(p::ADiscreteVDPTagPOMDP) = p.cpomdp
 
-convert_s{T}(::Type{T}, x::T, p) = x
-convert_a{T}(::Type{T}, x::T, p) = x
-convert_o{T}(::Type{T}, x::T, p) = x
+convert_s(::Type{T}, x::T, p) where T = x
+convert_a(::Type{T}, x::T, p) where T = x
+convert_o(::Type{T}, x::T, p) where T = x
 
 # state
 function convert_s(::Type{Int}, s::TagState, p::DiscreteVDPTagProblem)
@@ -71,47 +72,40 @@ end
 
 n_states(p::AODiscreteVDPTagPOMDP) = Inf
 n_actions(p::DiscreteVDPTagProblem) = 2*p.n_angles
-discount(p::DiscreteVDPTagProblem) = discount(cproblem(p)) 
+POMDPs.discount(p::DiscreteVDPTagProblem) = discount(cproblem(p))
 isterminal(p::DiscreteVDPTagProblem, s) = isterminal(cproblem(p), convert_s(TagState, s, p))
 
-actions(p::DiscreteVDPTagProblem) = 1:n_actions(p)
+POMDPs.actions(p::DiscreteVDPTagProblem) = 1:n_actions(p)
 
-function generate_s(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    return generate_s(cproblem(p), s, ca, rng)
+    return gen(cproblem(p), s, ca, rng)
 end
 
-function generate_sr(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    sp = generate_s(cproblem(p), s, ca, rng)
-    r = reward(cproblem(p), s, ca, sp)
-    return (sp, r)
+    return gen(DDNOut(:sp,:o,:r), cproblem(p), s, ca, rng)
 end
 
-function generate_sor(p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(n::DDNNode{:o}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    return generate_sor(cproblem(p), s, ca, rng)
+    return POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
 end
 
-function generate_o(p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
-    ca = convert_a(action_type(cproblem(p)), a, p)
-    return generate_o(cproblem(p), s, ca, sp, rng)
-end
-
-function generate_sor(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
-    ca = convert_a(action_type(cproblem(p)), a, p)
-    csor = generate_sor(cproblem(p), s, ca, rng)
+function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
+    ca = convert_a(actiontype(cproblem(p)), a, p)
+    csor = gen(DDNOut(:sp,:o,:r), cproblem(p), s, ca, rng)
     return (csor[1], convert_o(IVec8, csor[2], p), csor[3])
 end
 
-function generate_o(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
+function POMDPs.gen(n::DDNNode{:o}, p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    co = generate_o(cproblem(p), s, ca, sp, rng)
+    co = POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
     return convert_o(IVec8, co, p)
 end
 
-initial_state_distribution(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
-initial_state_distribution(p::ADiscreteVDPTagPOMDP) = VDPInitDist()
+POMDPs.initialstate_distribution(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
+POMDPs.initialstate_distribution(p::ADiscreteVDPTagPOMDP) = VDPInitDist()
 
 #=
 gauss_cdf(mean, std, x) = 0.5*(1.0+erf((x-mean)/(std*sqrt(2))))
@@ -124,7 +118,7 @@ function obs_weight(p::AODiscreteVDPTagPOMDP, a::Int, sp::TagState, o::Int)
     lower = co - 0.5*2*pi/p.n_angles
     if ca.look
         diff = sp.target - sp.agent
-        bearing = atan2(diff[2], diff[1])
+        bearing = atan(diff[2], diff[1])
         # three cases: o is in bin, below, or above
         if bearing <= upper && bearing > lower
             cdf_up = gauss_cdf(bearing, cp.bearing_std, upper)

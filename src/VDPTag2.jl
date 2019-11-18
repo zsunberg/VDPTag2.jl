@@ -6,16 +6,22 @@ using StaticArrays
 using Parameters
 using Plots
 using Distributions
-using POMDPToolbox
+using POMDPModelTools
+using POMDPPolicies
+using POMDPSimulators
 using ParticleFilters
+using Random
+using LinearAlgebra
+
 
 const Vec2 = SVector{2, Float64}
 const Vec8 = SVector{8, Float64}
 
-importall POMDPs
-import Base: rand, eltype, isnull, convert
+# importall POMDPs
+import Base: rand, eltype, convert
 import MCTS: next_action, n_children
 import ParticleFilters: obs_weight
+import POMDPs: actions
 
 export
     TagState,
@@ -55,7 +61,7 @@ struct TagAction
     angle::Float64
 end
 
-@with_kw immutable VDPTagMDP{B} <: MDP{TagState, Float64}
+@with_kw struct VDPTagMDP{B} <: MDP{TagState, Float64}
     mu::Float64          = 2.0
     agent_speed::Float64 = 1.0
     dt::Float64          = 0.1
@@ -69,7 +75,7 @@ end
     discount::Float64    = 0.95
 end
 
-@with_kw immutable VDPTagPOMDP{B} <: POMDP{TagState, TagAction, Vec8}
+@with_kw struct VDPTagPOMDP{B} <: POMDP{TagState, TagAction, Vec8}
     mdp::VDPTagMDP{B}           = VDPTagMDP()
     meas_cost::Float64          = 5.0
     active_meas_std::Float64    = 0.1
@@ -88,19 +94,14 @@ function next_ml_target(p::VDPTagMDP, pos::Vec2)
     return pos
 end
 
-function generate_s(pp::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
+function POMDPs.gen(::DDNNode{:sp}, pp::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
     p = mdp(pp)
     targ = next_ml_target(p, s.target) + p.pos_std*SVector(randn(rng), randn(rng))
     agent = barrier_stop(p.barriers, s.agent, p.agent_speed*p.step_size*SVector(cos(a), sin(a)))
     return TagState(agent, targ)
 end
 
-function generate_sr(p::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
-    sp = generate_s(p, s, a, rng)
-    return sp, reward(p, s, a, sp)
-end
-
-function reward(pp::VDPTagProblem, s::TagState, a::Float64, sp::TagState)
+function POMDPs.reward(pp::VDPTagProblem, s::TagState, a::Float64, sp::TagState)
     p = mdp(pp)
     if norm(sp.agent-sp.target) < p.tag_radius
         return p.tag_reward
@@ -109,20 +110,20 @@ function reward(pp::VDPTagProblem, s::TagState, a::Float64, sp::TagState)
     end
 end
 
-discount(pp::VDPTagProblem) = mdp(pp).discount
+POMDPs.discount(pp::VDPTagProblem) = mdp(pp).discount
 isterminal(pp::VDPTagProblem, s::TagState) = mdp(pp).tag_terminate && norm(s.agent-s.target) < mdp(pp).tag_radius
 
-immutable AngleSpace end
+struct AngleSpace end
 rand(rng::AbstractRNG, ::AngleSpace) = 2*pi*rand(rng)
-actions(::VDPTagMDP) = AngleSpace()
+POMDPs.actions(::VDPTagMDP) = AngleSpace()
 
-generate_s(p::VDPTagPOMDP, s::TagState, a::TagAction, rng::AbstractRNG) = generate_s(p, s, a.angle, rng)
+POMDPs.gen(n::DDNNode{:sp}, p::VDPTagPOMDP, s::TagState, a::TagAction, rng::AbstractRNG) = gen(n, p, s, a.angle, rng)
 
-immutable POVDPTagActionSpace end
+struct POVDPTagActionSpace end
 rand(rng::AbstractRNG, ::POVDPTagActionSpace) = TagAction(rand(rng, Bool), 2*pi*rand(rng))
-actions(::VDPTagPOMDP) = POVDPTagActionSpace()
+POMDPs.actions(::VDPTagPOMDP) = POVDPTagActionSpace()
 
-function reward(p::VDPTagPOMDP, s::TagState, a::TagAction, sp::TagState)
+function POMDPs.reward(p::VDPTagPOMDP, s::TagState, a::TagAction, sp::TagState)
     return reward(mdp(p), s, a.angle, sp) - a.look*p.meas_cost
 end
 
@@ -141,7 +142,7 @@ struct BeamDist
 end
 
 function rand(rng::AbstractRNG, d::BeamDist)
-    o = MVector{8, Float64}()
+    o = MVector{8, Float64}(undef)
     for i in 1:length(o)
         if i == d.abeam
             o[i] = rand(rng, d.an)
@@ -152,20 +153,20 @@ function rand(rng::AbstractRNG, d::BeamDist)
     return SVector(o)
 end
 
-function pdf(d::BeamDist, o::Vec8)
+function POMDPs.pdf(d::BeamDist, o::Vec8)
     p = 1.0
     for i in 1:length(o)
         if i == d.abeam
-            p *= pdf(d.an, o[i])
+            p *= POMDPs.pdf(d.an, o[i])
         else
-            p *= pdf(d.n, o[i])
+            p *= POMDPs.pdf(d.n, o[i])
         end
     end
     return p
 end
 
 function active_beam(rel_pos::Vec2)
-    angle = atan2(rel_pos[2], rel_pos[1])
+    angle = atan(rel_pos[2], rel_pos[1])
     while angle <= 0.0
         angle += 2*pi
     end
@@ -173,7 +174,7 @@ function active_beam(rel_pos::Vec2)
     return clamp(bm, 1, 8)
 end
 
-function observation(p::VDPTagPOMDP, a::TagAction, sp::TagState)
+function POMDPs.observation(p::VDPTagPOMDP, a::TagAction, sp::TagState)
     rel_pos = sp.target - sp.agent
     dist = norm(rel_pos)
     abeam = active_beam(rel_pos)
@@ -193,7 +194,7 @@ include("discretized.jl")
 include("visualization.jl")
 include("heuristics.jl")
 
-function POMDPToolbox.gbmdp_handle_terminal(pomdp::VDPTagPOMDP, updater::Updater, b::ParticleCollection, s, a, rng)
+function POMDPModelTools.gbmdp_handle_terminal(pomdp::VDPTagPOMDP, updater::Updater, b::ParticleCollection, s, a, rng)
     return ParticleCollection([s])
 end
 
