@@ -60,7 +60,7 @@ end
         label := "current agent position"
         pts = Plots.partialcircle(0, 2*pi, 100, m.tag_radius)
         x, y = Plots.unzip(pts)
-        x+s.agent[1], y+s.agent[2]
+        x .+ s.agent[1], y .+ s.agent[2]
     end
     @series begin
         seriestype := :scatter
@@ -82,10 +82,6 @@ end
     x, y
 end
 
-"Create a gif of a history and return the filename."
-function gif(p::VDPTagProblem, h::SimHistory)
-
-end
 
 "Create a quiver plot of the equations and the barriers"
 function Plots.quiver(p::VDPTagProblem)

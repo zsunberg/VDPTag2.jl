@@ -1,10 +1,15 @@
 using VDPTag2
 using Plots
-using POMDPToolbox
 using Reel
 using ProgressMeter
 using ParticleFilters
 using StaticArrays
+using POMDPs
+using Random
+using POMDPModelTools
+using POMDPPolicies
+using POMDPModels
+using POMDPSimulators
 
 frames = Frames(MIME("image/png"), fps=2)
 

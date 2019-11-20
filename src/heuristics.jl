@@ -31,7 +31,7 @@ end
 
 function POMDPs.action(p::ManageUncertainty, b::ParticleCollection{TagState})
     agent = first(particles(b)).agent
-    target_particles = Array{Float64}(2, n_particles(b))
+    target_particles = Array{Float64}(undef, 2, n_particles(b))
     for (i, s) in enumerate(particles(b))
         target_particles[:,i] = s.target
     end
