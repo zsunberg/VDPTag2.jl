@@ -77,37 +77,30 @@ isterminal(p::DiscreteVDPTagProblem, s) = isterminal(cproblem(p), convert_s(TagS
 
 POMDPs.actions(p::DiscreteVDPTagProblem) = 1:n_actions(p)
 
-function POMDPs.generate_s(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    return generate_s(cproblem(p), s, ca, rng)
+    return gen(cproblem(p), s, ca, rng)
 end
 
-function POMDPs.generate_sr(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    sp = generate_s(cproblem(p), s, ca, rng)
-    r = reward(cproblem(p), s, ca, sp)
-    return (sp, r)
+    return gen(DDNOut(:sp,:o,:r), cproblem(p), s, ca, rng)
 end
 
-function POMDPs.generate_sor(p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(n::DDNNode{:o}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    return generate_sor(cproblem(p), s, ca, rng)
+    return POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
 end
 
-function POMDPs.generate_o(p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
-    ca = convert_a(action_type(cproblem(p)), a, p)
-    return POMDPs.generate_o(cproblem(p), s, ca, sp, rng)
-end
-
-function POMDPs.generate_sor(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
     ca = convert_a(actiontype(cproblem(p)), a, p)
-    csor = generate_sor(cproblem(p), s, ca, rng)
+    csor = gen(DDNOut(:sp,:o,:r), cproblem(p), s, ca, rng)
     return (csor[1], convert_o(IVec8, csor[2], p), csor[3])
 end
 
-function POMDPs.generate_o(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
+function POMDPs.gen(n::DDNNode{:o}, p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
     ca = convert_a(action_type(cproblem(p)), a, p)
-    co = POMDPs.generate_o(cproblem(p), s, ca, sp, rng)
+    co = POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
     return convert_o(IVec8, co, p)
 end
 

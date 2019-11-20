@@ -27,7 +27,7 @@
     end
 end
 
-@recipe function f(pomdp::VDPTagPOMDP, h::POMDPHistory{TagState})
+@recipe function f(pomdp::VDPTagPOMDP, h::POMDPSimulators.AbstractSimHistory)
     ratio --> :equal
     xlim --> (-5, 5)
     ylim --> (-5, 5)
@@ -38,7 +38,7 @@ end
     end
 end
 
-@recipe function f(p::VDPTagProblem, h::SimHistory)
+@recipe function f(p::VDPTagProblem, h::POMDPSimulators.AbstractSimHistory)
     m = mdp(p)
     ratio --> :equal
     xlim --> (-5, 5)
@@ -60,7 +60,7 @@ end
         label := "current agent position"
         pts = Plots.partialcircle(0, 2*pi, 100, m.tag_radius)
         x, y = Plots.unzip(pts)
-        x .+ s.agent[1], y .+ s.agent[2]
+        x+s.agent[1], y+s.agent[2]
     end
     @series begin
         seriestype := :scatter
@@ -81,7 +81,6 @@ end
     markersize --> 0.1
     x, y
 end
-
 
 "Create a quiver plot of the equations and the barriers"
 function Plots.quiver(p::VDPTagProblem)

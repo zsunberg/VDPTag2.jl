@@ -34,18 +34,18 @@ for a in range(0.0, stop=2*pi, length=100)
 end
 
 pomdp = VDPTagPOMDP()
-for sao in stepthrough(pomdp, RandomPolicy(pomdp), "sao", max_steps=10)
+for sao in stepthrough(pomdp, RandomPolicy(pomdp), "s,a,o", max_steps=10)
     @show sao
 end
 
 dpomdp = AODiscreteVDPTagPOMDP(pomdp, 30, 0.5)
-for sao in stepthrough(dpomdp, RandomPolicy(dpomdp), "sao", max_steps=10)
+for sao in stepthrough(dpomdp, RandomPolicy(dpomdp), "s,a,o", max_steps=10)
     @show sao
 end
 
 pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.2, 1.8)))
 filter = SIRParticleFilter(pomdp, 1000)
-for sao in stepthrough(pomdp, ToNextML(pomdp), filter, "sao", max_steps=10)
+for sao in stepthrough(pomdp, ToNextML(pomdp), filter, "s,a,o", max_steps=10)
     @show sao
 end
 

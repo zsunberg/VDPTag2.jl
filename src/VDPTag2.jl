@@ -94,16 +94,11 @@ function next_ml_target(p::VDPTagMDP, pos::Vec2)
     return pos
 end
 
-function POMDPs.generate_s(pp::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
+function POMDPs.gen(::DDNNode{:sp}, pp::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
     p = mdp(pp)
     targ = next_ml_target(p, s.target) + p.pos_std*SVector(randn(rng), randn(rng))
     agent = barrier_stop(p.barriers, s.agent, p.agent_speed*p.step_size*SVector(cos(a), sin(a)))
     return TagState(agent, targ)
-end
-
-function POMDPs.generate_sr(p::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
-    sp = generate_s(p, s, a, rng)
-    return sp, reward(p, s, a, sp)
 end
 
 function POMDPs.reward(pp::VDPTagProblem, s::TagState, a::Float64, sp::TagState)
@@ -122,7 +117,7 @@ struct AngleSpace end
 rand(rng::AbstractRNG, ::AngleSpace) = 2*pi*rand(rng)
 POMDPs.actions(::VDPTagMDP) = AngleSpace()
 
-POMDPs.generate_s(p::VDPTagPOMDP, s::TagState, a::TagAction, rng::AbstractRNG) = generate_s(p, s, a.angle, rng)
+POMDPs.gen(n::DDNNode{:sp}, p::VDPTagPOMDP, s::TagState, a::TagAction, rng::AbstractRNG) = gen(n, p, s, a.angle, rng)
 
 struct POVDPTagActionSpace end
 rand(rng::AbstractRNG, ::POVDPTagActionSpace) = TagAction(rand(rng, Bool), 2*pi*rand(rng))
@@ -148,7 +143,6 @@ end
 
 function rand(rng::AbstractRNG, d::BeamDist)
     o = MVector{8, Float64}(undef)
-    println("BeamDist = $(BeamDist)")
     for i in 1:length(o)
         if i == d.abeam
             o[i] = rand(rng, d.an)
