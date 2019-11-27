@@ -5,3 +5,6 @@
 [![Coverage Status](https://coveralls.io/repos/zsunberg/VDPTag2.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/zsunberg/VDPTag2.jl?branch=master)
 
 [![codecov.io](http://codecov.io/github/zsunberg/VDPTag2.jl/coverage.svg?branch=master)](http://codecov.io/github/zsunberg/VDPTag2.jl?branch=master)
+
+
+See [VDPTag2/test](https://github.com/zsunberg/VDPTag2.jl/tree/master/test) for usage examples. 
