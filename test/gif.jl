@@ -28,8 +28,8 @@ gr()
 @showprogress "Creating gif..." for i in 1:n_steps(hist)
     push!(frames, plot(pomdp, view(hist, 1:i)))
 end
-
-filename = string(tempname(), "_vdprun.gif")
+# NOTE: The below file path is subject the change for each user.
+filename = string("/Users/chandlerkilpatrick/_vdprun.gif")
 write(filename, frames)
 println(filename)
-run(`setsid xdg-open $filename`)
+#run(`setsid xdg-open $filename`)
