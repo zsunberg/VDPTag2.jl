@@ -29,7 +29,7 @@ gr()
     push!(frames, plot(pomdp, view(hist, 1:i)))
 end
 # NOTE: The below file path is subject the change for each user.
-filename = string("/Users/chandlerkilpatrick/_vdprun.gif")
+filename = string("_vdprun.gif")
 write(filename, frames)
 println(filename)
 #run(`setsid xdg-open $filename`)
