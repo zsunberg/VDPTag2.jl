@@ -78,17 +78,17 @@ isterminal(p::DiscreteVDPTagProblem, s) = isterminal(cproblem(p), convert_s(TagS
 POMDPs.actions(p::DiscreteVDPTagProblem) = 1:n_actions(p)
 
 function POMDPs.gen(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::AbstractRNG)
-    ca = convert_a(action_type(cproblem(p)), a, p)
+    ca = convert_a(actiontype(cproblem(p)), a, p)
     return gen(cproblem(p), s, ca, rng)
 end
 
 function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
-    ca = convert_a(action_type(cproblem(p)), a, p)
+    ca = convert_a(actiontype(cproblem(p)), a, p)
     return gen(DDNOut(:sp,:o,:r), cproblem(p), s, ca, rng)
 end
 
 function POMDPs.gen(n::DDNNode{:o}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
-    ca = convert_a(action_type(cproblem(p)), a, p)
+    ca = convert_a(actiontype(cproblem(p)), a, p)
     return POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
 end
 
@@ -99,7 +99,7 @@ function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::AODiscreteVDPTagPOMDP, s::TagState
 end
 
 function POMDPs.gen(n::DDNNode{:o}, p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
-    ca = convert_a(action_type(cproblem(p)), a, p)
+    ca = convert_a(actiontype(cproblem(p)), a, p)
     co = POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
     return convert_o(IVec8, co, p)
 end
@@ -112,8 +112,8 @@ gauss_cdf(mean, std, x) = 0.5*(1.0+erf((x-mean)/(std*sqrt(2))))
 function obs_weight(p::AODiscreteVDPTagPOMDP, a::Int, sp::TagState, o::Int)
     cp = cproblem(p)
     @assert cp.bearing_std <= 2*pi/6.0 "obs_weight assumes σ <= $(2*pi/6.0)"
-    ca = convert_a(action_type(cp), a, p)
-    co = convert_o(obs_type(cp), o, p) # float between 0 and 2pi
+    ca = convert_a(actiontype(cp), a, p)
+    co = convert_o(obstype(cp), o, p) # float between 0 and 2pi
     upper = co + 0.5*2*pi/p.n_angles
     lower = co - 0.5*2*pi/p.n_angles
     if ca.look

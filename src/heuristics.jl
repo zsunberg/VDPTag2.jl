@@ -1,6 +1,6 @@
-struct ToNextML <: Policy
+struct ToNextML{R<:AbstractRNG} <: Policy
     p::VDPTagMDP
-    rng::MersenneTwister
+    rng::R
 end
 
 ToNextML(p::VDPTagProblem; rng=Random.GLOBAL_RNG) = ToNextML(mdp(p), rng)
@@ -14,7 +14,7 @@ end
 POMDPs.action(p::ToNextML, b::ParticleCollection{TagState}) = TagAction(false, POMDPs.action(p, rand(p.rng, b)))
 
 struct ToNextMLSolver <: Solver
-    rng::MersenneTwister
+    rng::AbstractRNG
 end
 
 solve(s::ToNextMLSolver, p::VDPTagProblem) = ToNextML(mdp(p), s.rng)
@@ -67,7 +67,7 @@ struct TranslatedPolicy{P<:Policy, T, ST, AT} <: Policy
 end
 
 function translate_policy(p::Policy, from::Union{POMDP,MDP}, to::Union{POMDP,MDP}, translator)
-    return TranslatedPolicy(p, translator, state_type(from), action_type(to))
+    return TranslatedPolicy(p, translator, statetype(from), actiontype(to))
 end
 
 function POMDPs.action(p::TranslatedPolicy, s)

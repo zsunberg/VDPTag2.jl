@@ -41,6 +41,8 @@ end
 dpomdp = AODiscreteVDPTagPOMDP(pomdp, 30, 0.5)
 for sao in stepthrough(dpomdp, RandomPolicy(dpomdp), "s,a,o", max_steps=10)
     @show sao
+    # to address #7
+    POMDPs.gen(DDNNode(:o), dpomdp, sao[1], 1, sao[1], Random.GLOBAL_RNG)
 end
 
 pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.2, 1.8)))
