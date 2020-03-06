@@ -1,6 +1,6 @@
 name = "VDPTag2"
 uuid = "1859f924-e7ac-11e9-25da-97193e6325a8"
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 BeliefUpdaters = "8bb6e9a1-7d73-552c-a44a-e5dc5634aac4"
