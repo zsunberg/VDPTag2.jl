@@ -50,7 +50,7 @@ end
         x, y
     end
     @series begin
-        a = action_hist(h)[end]
+        a = h[end].a
         if a isa TagAction && a.look
             color := :blue
         else
@@ -60,7 +60,7 @@ end
         label := "current agent position"
         pts = Plots.partialcircle(0, 2*pi, 100, m.tag_radius)
         x, y = Plots.unzip(pts)
-        x+s.agent[1], y+s.agent[2]
+        x.+s.agent[1], y.+s.agent[2]
     end
     @series begin
         seriestype := :scatter

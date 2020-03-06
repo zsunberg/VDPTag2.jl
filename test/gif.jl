@@ -1,10 +1,15 @@
 using VDPTag2
 using Plots
-using POMDPToolbox
 using Reel
 using ProgressMeter
 using ParticleFilters
 using StaticArrays
+using POMDPs
+using Random
+using POMDPModelTools
+using POMDPPolicies
+using POMDPModels
+using POMDPSimulators
 
 frames = Frames(MIME("image/png"), fps=2)
 
@@ -24,7 +29,7 @@ gr()
     push!(frames, plot(pomdp, view(hist, 1:i)))
 end
 
-filename = string(tempname(), "_vdprun.gif")
+filename = string("_vdprun.gif")
 write(filename, frames)
-println(filename)
-run(`setsid xdg-open $filename`)
+println(String(pwd()) * "/" * filename)
+# run(`setsid xdg-open $filename`)
