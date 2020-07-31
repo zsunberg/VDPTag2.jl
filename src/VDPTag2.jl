@@ -21,7 +21,7 @@ const Vec8 = SVector{8, Float64}
 import Base: rand, eltype, convert
 import MCTS: next_action, n_children
 import ParticleFilters: obs_weight
-import POMDPs: actions
+import POMDPs: actions, isterminal
 
 export
     TagState,
@@ -50,6 +50,7 @@ export
     ManageUncertainty,
     CardinalBarriers,
     mdp
+    isterminal
 
 struct TagState
     agent::Vec2
