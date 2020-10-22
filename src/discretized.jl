@@ -1,4 +1,4 @@
-import POMDPs.initialstate_distribution
+import POMDPs.initialstate
 const IVec8 = SVector{8, Int}
 
 @with_kw struct AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, IVec8}
@@ -108,7 +108,6 @@ function POMDPs.observation(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::T
 end
 
 POMDPs.initialstate(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
-POMDPs.initialstate_distribution(p::ADiscreteVDPTagPOMDP) = VDPInitDist()
 
 #=
 gauss_cdf(mean, std, x) = 0.5*(1.0+erf((x-mean)/(std*sqrt(2))))

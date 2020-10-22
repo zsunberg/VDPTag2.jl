@@ -21,10 +21,10 @@ struct MyNode end
 MCTS.n_children(::MyNode) = rand(1:10)
 
 @inferred next_action(gen, pomdp, s, MyNode())
-@inferred next_action(gen, pomdp, initialstate_distribution(pomdp), MyNode())
+@inferred next_action(gen, pomdp, initialstate(pomdp), MyNode())
 
 for a in range(0.0, stop=2*pi, length=100)
-    s = TagState(Vec2(0,0), Vec2(1,1))
+    local s = TagState(Vec2(0,0), Vec2(1,1))
     barriers = CardinalBarriers(0.2, 1.8)
     agent_speed = 1.0
     step_size = 0.5
@@ -56,9 +56,9 @@ pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.0, 100.0)))
 filter = SIRParticleFilter(pomdp, 1000)
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     @showprogress for i in 1:100
-        is = initialstate(pomdp, Random.GLOBAL_RNG)
+        is = rand(Random.GLOBAL_RNG, initialstate(pomdp))
         is = TagState(quadrant, is.target)
-        for (s, sp) in stepthrough(pomdp, ToNextML(pomdp), filter, initialstate_distribution(pomdp), is, "s,sp", max_steps=100)
+        for (s, sp) in stepthrough(pomdp, ToNextML(pomdp), filter, initialstate(pomdp), is, "s,sp", max_steps=100)
             @test all(s.agent.*quadrant .>= 0.0)
             if s == sp
                 println("did not move (this should not happen a bunch of times)")
@@ -80,7 +80,7 @@ N = 100
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     in_other = falses(N)
     @showprogress for i in 1:N
-        is = initialstate(pomdp, Random.GLOBAL_RNG)
+        is = rand(Random.GLOBAL_RNG, initialstate(pomdp))
         is = TagState(quadrant, is.target)
         hr = HistoryRecorder(max_steps=100)
         hist = simulate(hr, pomdp, ToNextML(pomdp), filter)
@@ -93,7 +93,7 @@ end
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     in_other = falses(N)
     @showprogress for i in 1:N
-        is = initialstate(pomdp, Random.GLOBAL_RNG)
+        is = rand(Random.GLOBAL_RNG, initialstate(pomdp))
         is = TagState(quadrant, is.target)
         hr = HistoryRecorder(max_steps=2)
         hist = simulate(hr, pomdp, RandomPolicy(pomdp))

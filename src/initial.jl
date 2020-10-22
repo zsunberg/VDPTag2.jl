@@ -8,4 +8,4 @@ function rand(rng::AbstractRNG, d::VDPInitDist)
 
 end
 
-POMDPs.initialstate_distribution(::VDPTagProblem) = VDPInitDist()
+POMDPs.initialstate(::VDPTagProblem) = VDPInitDist()
