@@ -95,11 +95,13 @@ function next_ml_target(p::VDPTagMDP, pos::Vec2)
     return pos
 end
 
-function POMDPs.gen(::DDNNode{:sp}, pp::VDPTagProblem, s::TagState, a::Float64, rng::AbstractRNG)
-    p = mdp(pp)
-    targ = next_ml_target(p, s.target) + p.pos_std*SVector(randn(rng), randn(rng))
-    agent = barrier_stop(p.barriers, s.agent, p.agent_speed*p.step_size*SVector(cos(a), sin(a)))
-    return TagState(agent, targ)
+function POMDPs.transition(pp::VDPTagProblem, s::TagState, a::Float64)
+    ImplicitDistribution(pp, s, a) do pp, s, a, rng
+        p = mdp(pp)
+        targ = next_ml_target(p, s.target) + p.pos_std*SVector(randn(rng), randn(rng))
+        agent = barrier_stop(p.barriers, s.agent, p.agent_speed*p.step_size*SVector(cos(a), sin(a)))
+        return TagState(agent, targ)
+    end
 end
 
 function POMDPs.reward(pp::VDPTagProblem, s::TagState, a::Float64, sp::TagState)
@@ -118,7 +120,7 @@ struct AngleSpace end
 rand(rng::AbstractRNG, ::AngleSpace) = 2*pi*rand(rng)
 POMDPs.actions(::VDPTagMDP) = AngleSpace()
 
-POMDPs.gen(n::DDNNode{:sp}, p::VDPTagPOMDP, s::TagState, a::TagAction, rng::AbstractRNG) = gen(n, p, s, a.angle, rng)
+POMDPs.transition(p::VDPTagPOMDP, s::TagState, a::TagAction) = transition(p, s, a.angle)
 
 struct POVDPTagActionSpace end
 rand(rng::AbstractRNG, ::POVDPTagActionSpace) = TagAction(rand(rng, Bool), 2*pi*rand(rng))
