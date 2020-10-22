@@ -82,29 +82,32 @@ function POMDPs.gen(p::DiscreteVDPTagProblem, s::TagState, a::Int, rng::Abstract
     return gen(cproblem(p), s, ca, rng)
 end
 
-function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
     ca = convert_a(actiontype(cproblem(p)), a, p)
-    return gen(DDNOut(:sp,:o,:r), cproblem(p), s, ca, rng)
+    sor = @gen(:sp,:o,:r)(cproblem(p), s, ca, rng)
+    return (sp = sor[1], o = sor[2], r = sor[3])
 end
 
-function POMDPs.gen(n::DDNNode{:o}, p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
+function POMDPs.observation(p::ADiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState)
     ca = convert_a(actiontype(cproblem(p)), a, p)
-    return POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
+    return POMDPs.observation(cproblem(p), s, ca, sp)
 end
 
-function POMDPs.gen(::DDNOut{(:sp,:o,:r)}, p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
+function POMDPs.gen(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, rng::AbstractRNG)
     ca = convert_a(actiontype(cproblem(p)), a, p)
-    csor = gen(DDNOut(:sp,:o,:r), cproblem(p), s, ca, rng)
-    return (csor[1], convert_o(IVec8, csor[2], p), csor[3])
+    csor = @gen(:sp,:o,:r)(cproblem(p), s, ca, rng)
+    return (sp=csor[1], o=convert_o(IVec8, csor[2], p), r=csor[3])
 end
 
-function POMDPs.gen(n::DDNNode{:o}, p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState, rng::AbstractRNG)
-    ca = convert_a(actiontype(cproblem(p)), a, p)
-    co = POMDPs.gen(n, cproblem(p), s, ca, sp, rng)
-    return convert_o(IVec8, co, p)
+function POMDPs.observation(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::TagState)
+    ImplicitDistribution(p, s, a, sp) do p, s, a, sp, rng
+        ca = convert_a(actiontype(cproblem(p)), a, p)
+        co = rand(rng, observation(cproblem(p), s, ca, sp))
+        return convert_o(IVec8, co, p)
+    end
 end
 
-POMDPs.initialstate_distribution(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
+POMDPs.initialstate(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
 POMDPs.initialstate_distribution(p::ADiscreteVDPTagPOMDP) = VDPInitDist()
 
 #=
