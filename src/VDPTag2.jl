@@ -94,6 +94,7 @@ function next_ml_target(p::VDPTagMDP, pos::Vec2)
     end
     return pos
 end
+next_ml_target(p::VDPTagMDP, pos::AbstractVector) = next_ml_target(p, convert(Vec2, pos))
 
 function POMDPs.transition(pp::VDPTagProblem, s::TagState, a::Float64)
     ImplicitDistribution(pp, s, a) do pp, s, a, rng
