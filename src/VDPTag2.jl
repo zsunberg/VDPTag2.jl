@@ -191,6 +191,8 @@ function POMDPs.observation(p::VDPTagPOMDP, a::TagAction, sp::TagState)
     BeamDist(abeam, an, n)
 end
 
+POMDPs.observation(p::VDPTagPOMDP, a::Float64, sp::TagState) = observation(p, TagAction(false, a), sp)
+
 include("rk4.jl")
 include("barriers.jl")
 include("initial.jl")
