@@ -17,8 +17,8 @@ struct ToNextMLSolver <: Solver
     rng::AbstractRNG
 end
 
-solve(s::ToNextMLSolver, p::VDPTagProblem) = ToNextML(mdp(p), s.rng)
-function solve(s::ToNextMLSolver, dp::DiscreteVDPTagProblem)
+POMDPs.solve(s::ToNextMLSolver, p::VDPTagProblem) = ToNextML(mdp(p), s.rng)
+function POMDPs.solve(s::ToNextMLSolver, dp::DiscreteVDPTagProblem)
     cp = cproblem(dp)
     return translate_policy(ToNextML(mdp(cp), s.rng), cp, dp, dp)
 end
