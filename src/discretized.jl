@@ -1,15 +1,15 @@
 import POMDPs.initialstate
 const IVec8 = SVector{8, Int}
 
-@with_kw struct AODiscreteVDPTagPOMDP <: POMDP{TagState, Int, IVec8}
-    cpomdp::VDPTagPOMDP = VDPTagPOMDP()
-    n_angles::Int       = 10
-    binsize::Float64    = 0.5
+@with_kw struct AODiscreteVDPTagPOMDP{B} <: POMDP{TagState, Int, IVec8}
+    cpomdp::VDPTagPOMDP{B}  = VDPTagPOMDP()
+    n_angles::Int           = 10
+    binsize::Float64        = 0.5
 end
 
-@with_kw struct ADiscreteVDPTagPOMDP <: POMDP{TagState, Int, Vec8}
-    cpomdp::VDPTagPOMDP = VDPTagPOMDP()
-    n_angles::Int       = 10
+@with_kw struct ADiscreteVDPTagPOMDP{B} <: POMDP{TagState, Int, Vec8}
+    cpomdp::VDPTagPOMDP{B}  = VDPTagPOMDP()
+    n_angles::Int           = 10
 end
 
 
@@ -107,7 +107,7 @@ function POMDPs.observation(p::AODiscreteVDPTagPOMDP, s::TagState, a::Int, sp::T
     end
 end
 
-POMDPs.initialstate(p::AODiscreteVDPTagPOMDP) = VDPInitDist()
+POMDPs.initialstate(p::DiscreteVDPTagProblem) = VDPInitDist()
 
 #=
 gauss_cdf(mean, std, x) = 0.5*(1.0+erf((x-mean)/(std*sqrt(2))))
