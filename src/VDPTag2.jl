@@ -6,9 +6,7 @@ using StaticArrays
 using Parameters
 using Plots
 using Distributions
-using POMDPModelTools
-using POMDPPolicies
-using POMDPSimulators
+using POMDPTools
 using ParticleFilters
 using Random
 using LinearAlgebra
@@ -200,7 +198,7 @@ include("discretized.jl")
 include("visualization.jl")
 include("heuristics.jl")
 
-function POMDPModelTools.gbmdp_handle_terminal(pomdp::VDPTagPOMDP, updater::Updater, b::ParticleCollection, s, a, rng)
+function ModelTools.gbmdp_handle_terminal(pomdp::VDPTagPOMDP, updater::Updater, b::ParticleCollection, s, a, rng)
     return ParticleCollection([s])
 end
 

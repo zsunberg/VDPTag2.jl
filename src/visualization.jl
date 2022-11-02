@@ -27,7 +27,7 @@
     end
 end
 
-@recipe function f(pomdp::VDPTagPOMDP, h::POMDPSimulators.AbstractSimHistory)
+@recipe function f(pomdp::VDPTagPOMDP, h::POMDPTools.AbstractSimHistory)
     ratio --> :equal
     xlim --> (-5, 5)
     ylim --> (-5, 5)
@@ -38,7 +38,7 @@ end
     end
 end
 
-@recipe function f(p::VDPTagProblem, h::POMDPSimulators.AbstractSimHistory)
+@recipe function f(p::VDPTagProblem, h::POMDPTools.AbstractSimHistory)
     m = mdp(p)
     ratio --> :equal
     xlim --> (-5, 5)

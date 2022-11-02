@@ -6,11 +6,8 @@ using ParticleFilters
 using ProgressMeter
 using LinearAlgebra
 using Random
-using POMDPModelTools
-using POMDPPolicies
+using POMDPTools
 using POMDPModels
-using POMDPSimulators
-
 
 Random.seed!(1)
 pomdp = VDPTagPOMDP()
@@ -46,14 +43,14 @@ for sao in stepthrough(dpomdp, RandomPolicy(dpomdp), "s,a,o", max_steps=10)
 end
 
 pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.2, 1.8)))
-filter = SIRParticleFilter(pomdp, 1000)
+filter = BootstrapFilter(pomdp, 1000)
 for sao in stepthrough(pomdp, ToNextML(pomdp), filter, "s,a,o", max_steps=10)
     @show sao
 end
 
 # test to make sure it can't pass through any walls
 pomdp = VDPTagPOMDP(mdp=VDPTagMDP(barriers=CardinalBarriers(0.0, 100.0)))
-filter = SIRParticleFilter(pomdp, 1000)
+filter = BootstrapFilter(pomdp, 1000)
 for quadrant in [Vec2(1,1), Vec2(-1,1), Vec2(1,-1), Vec2(-1,-1)]
     @showprogress for i in 1:100
         is = rand(Random.GLOBAL_RNG, initialstate(pomdp))
